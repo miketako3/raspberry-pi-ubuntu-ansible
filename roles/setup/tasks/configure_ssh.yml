@@ -1,0 +1,49 @@
+---
+- name: .sshディレクトリ作成
+  file:
+    path: "~{{ ansible_user }}/.ssh"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0700
+- name: 公開鍵を移送
+  copy:
+    dest: "~{{ ansible_user }}/.ssh/authorized_keys"
+    content: "{{ lookup('file', '/ssh/id_rsa.pub') }}"
+    mode: 0600
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: "待受ポートを {{ SSH_PORT }} に変更"
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^Port"
+    insertafter: "^#Port"
+    line: "Port {{ SSH_PORT }}"
+- name: パスワード認証の無効化
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PasswordAuthentication"
+    insertafter: "^#PasswordAuthentication"
+    line: "PasswordAuthentication no"
+- name: 公開鍵認証の有効化
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PubkeyAuthentication"
+    insertafter: "^#PubkeyAuthentication"
+    line: "PubkeyAuthentication yes"
+- name: rootユーザのログイン禁止
+  become: yes
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^PermitRootLogin"
+    insertafter: "^#PermitRootLogin"
+    line: "PermitRootLogin no"
+- name: sshdリスタート
+  become: yes
+  service:
+    name: ssh
+    state: restarted

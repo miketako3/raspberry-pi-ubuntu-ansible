@@ -1,0 +1,11 @@
+version: '3'
+services:
+  ansible:
+    build: .
+    working_dir: /work
+    volumes:
+      - .:/work
+      - ~/.ssh:/ssh:ro
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    entrypoint: ansible-playbook -i hosts setup.yml --extra-vars="@private.yml"

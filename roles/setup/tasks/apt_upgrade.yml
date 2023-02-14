@@ -1,0 +1,13 @@
+---
+- name: apt update
+  become: yes
+  apt:
+    update_cache: yes
+  vars:
+    ansible_command_timeout: 1200
+- name: apt upgrade
+  become: yes
+  apt:
+    upgrade: yes
+  vars:
+    ansible_command_timeout: 1200

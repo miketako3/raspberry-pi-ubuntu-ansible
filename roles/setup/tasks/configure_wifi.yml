@@ -1,0 +1,24 @@
+---
+- name: install require package
+  become: yes
+  apt:
+    name: wpasupplicant
+    state: present
+- name: start wpa client
+  become: yes
+  systemd:
+    name: wpa_supplicant
+    state: started
+
+- name: create config file
+  become: yes
+  template:
+    src: ../templates/netplan.j2
+    dest: /etc/netplan/99-custom.yaml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: reload netplan
+  become: yes
+  shell: netplan apply

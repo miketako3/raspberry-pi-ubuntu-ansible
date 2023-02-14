@@ -1,0 +1,16 @@
+network:
+  version: 2
+  wifis:
+    wlan0:
+      dhcp4: false
+      dhcp6: false
+      addresses:
+        - {{ SERVER_IP_ADDRESS }}
+      routes:
+        - to: default
+          via: {{ ROUTER_IP_ADDRESS }}
+      nameservers:
+          addresses: [{{ NAME_SERVER_IP_ADDRESS }}, 8.8.8.8, 8.8.4.4]
+      access-points:
+          "{{ ACCESS_POINT_SSID }}":
+              password: "{{ ACCESS_POINT_PASSWORD }}"
